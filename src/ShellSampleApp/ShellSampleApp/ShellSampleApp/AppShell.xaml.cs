@@ -24,7 +24,17 @@ namespace ShellSampleApp
             else
             {
                 // トップページ以外の場合はトップページに戻る
-                _ = GoToAsync("//AboutPage");
+                _ = GoToAsync("//AboutPage").ContinueWith(async (result) =>
+                {
+                    if (result.Exception != null)
+                    {
+                        // エラーが起きてたら何か処理
+                        await Device.InvokeOnMainThreadAsync(async () =>
+                        {
+                            await DisplayAlert("Error", result.Exception.Message, "Close");
+                        });
+                    }
+                });
                 return true;
             }
         }
